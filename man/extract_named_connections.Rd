@@ -26,15 +26,15 @@ xml <- xml2::read_xml(twb)
 extract_named_connections(xml)
 }
 
-# Alternative: read from a tiny '.twbx'
 twbx <- system.file("extdata", "test_for_zip.twbx", package = "twbparser")
 if (nzchar(twbx) && file.exists(twbx)) {
-members <- twbx_list(twbx)
-twb_member <- members$Name[grepl("\\\\.twb$", members$Name)][1]
-if (!is.na(twb_member)) {
-xml <- xml2::read_xml(utils::unz(twbx, twb_member))
-extract_named_connections(xml)
-  }
+ members <- twbx_list(twbx)
+ twb_rows <- members$name[grepl("\\\\.twb$", members$name)]
+ if (length(twb_rows) > 0L && !is.na(twb_rows[1])) {
+   twb_member <- twb_rows[1]
+   xml <- xml2::read_xml(utils::unzip(twbx, twb_member, exdir = tempdir()))
+   extract_named_connections(xml)
+ }
 }
 
 }

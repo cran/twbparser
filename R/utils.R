@@ -259,15 +259,16 @@ print_datasource_summary <- function(parser) {
 #' extract_named_connections(xml)
 #' }
 #'
-#' # Alternative: read from a tiny '.twbx'
+# Alternative: read from a tiny '.twbx'
 #' twbx <- system.file("extdata", "test_for_zip.twbx", package = "twbparser")
 #' if (nzchar(twbx) && file.exists(twbx)) {
-#' members <- twbx_list(twbx)
-#' twb_member <- members$Name[grepl("\\.twb$", members$Name)][1]
-#' if (!is.na(twb_member)) {
-#' xml <- xml2::read_xml(utils::unz(twbx, twb_member))
-#' extract_named_connections(xml)
-#'   }
+#'  members <- twbx_list(twbx)
+#'  twb_rows <- members$name[grepl("\\.twb$", members$name)]
+#'  if (length(twb_rows) > 0L && !is.na(twb_rows[1])) {
+#'    twb_member <- twb_rows[1]
+#'    xml <- xml2::read_xml(utils::unzip(twbx, twb_member, exdir = tempdir()))
+#'    extract_named_connections(xml)
+#'  }
 #' }
 #'
 #' @export
@@ -337,3 +338,8 @@ extract_named_connections <- function(xml_doc) {
 #' @return Character vector with keys replaced by `[REDACTED_AWS_KEY]`
 #' @keywords internal
 redact <- function(x) gsub("\\bAKIA[0-9A-Z]{16}\\b", "[REDACTED_AWS_KEY]", x %||% "")
+utils::globalVariables(c(
+  "value", "palette_name", "kind", "detail", "scope",
+  "dashboard", "mark_types", "filters", "chart_types",
+  "integer_", "page_type"
+))
