@@ -48,8 +48,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,7 +61,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -356,9 +357,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p><code>twbparser</code> parses Tableau <code>.twb</code> and
 <code>.twbx</code> workbooks and exposes datasources, relationships,
 joins, fields, calculated fields, and TWBX assets. It also provides
-page-centric insights: dashboards, worksheets, stories, their
-composition, filter positions, chart types, and colors/palettes. This
-vignette demonstrates common use cases.</p>
+page-centric insights — dashboards, worksheets, stories, their
+composition, filter positions, chart types, and colors/palettes — as
+well as per-worksheet shelf/filter/axis/sort details and per-dashboard
+zone layout and actions. This vignette demonstrates common use
+cases.</p>
 </div>
 <div id="parse-a-tableau-workbook" class="section level1">
 <h1>Parse a Tableau Workbook</h1>
@@ -408,13 +411,13 @@ vignette demonstrates common use cases.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">head</span>(parser<span class="sc">$</span><span class="fu">get_fields</span>())</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 10</span></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt;   datasource        name  caption datatype role  semantic_role table table_clean</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;             &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt; &lt;lgl&gt;      </span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; 1 federated.0grgao… OBJE… &lt;NA&gt;    integer  &lt;NA&gt;  &lt;NA&gt;          &lt;NA&gt;  NA         </span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; 2 federated.0grgao… MUN   &lt;NA&gt;    string   &lt;NA&gt;  &lt;NA&gt;          &lt;NA&gt;  NA         </span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; 3 federated.0grgao… COUN… &lt;NA&gt;    string   &lt;NA&gt;  &lt;NA&gt;          &lt;NA&gt;  NA         </span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; 4 federated.0grgao… MUN_… &lt;NA&gt;    string   &lt;NA&gt;  &lt;NA&gt;          &lt;NA&gt;  NA         </span></span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; 5 federated.0grgao… MUN_… &lt;NA&gt;    string   &lt;NA&gt;  &lt;NA&gt;          &lt;NA&gt;  NA         </span></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; 6 federated.0grgao… NAME  &lt;NA&gt;    string   &lt;NA&gt;  &lt;NA&gt;          &lt;NA&gt;  NA         </span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;             &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt; &lt;chr&gt;      </span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; 1 federated.0grgao… OBJE… &lt;NA&gt;    integer  &lt;NA&gt;  &lt;NA&gt;          &lt;NA&gt;  &lt;NA&gt;       </span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; 2 federated.0grgao… MUN   &lt;NA&gt;    string   &lt;NA&gt;  &lt;NA&gt;          &lt;NA&gt;  &lt;NA&gt;       </span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; 3 federated.0grgao… COUN… &lt;NA&gt;    string   &lt;NA&gt;  &lt;NA&gt;          &lt;NA&gt;  &lt;NA&gt;       </span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; 4 federated.0grgao… MUN_… &lt;NA&gt;    string   &lt;NA&gt;  &lt;NA&gt;          &lt;NA&gt;  &lt;NA&gt;       </span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; 5 federated.0grgao… MUN_… &lt;NA&gt;    string   &lt;NA&gt;  &lt;NA&gt;          &lt;NA&gt;  &lt;NA&gt;       </span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; 6 federated.0grgao… NAME  &lt;NA&gt;    string   &lt;NA&gt;  &lt;NA&gt;          &lt;NA&gt;  &lt;NA&gt;       </span></span>
 <span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; # ℹ 2 more variables: field_clean &lt;chr&gt;, is_parameter &lt;lgl&gt;</span></span>
 <span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="fu">head</span>(parser<span class="sc">$</span><span class="fu">get_calculated_fields</span>(<span class="at">pretty =</span> <span class="cn">TRUE</span>, <span class="at">wrap =</span> <span class="dv">120</span>))</span>
 <span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 9</span></span>
@@ -462,32 +465,124 @@ vignette demonstrates common use cases.</p>
 <span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; # A tibble: 0 × 4</span></span>
 <span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; # ℹ 4 variables: kind &lt;chr&gt;, detail &lt;chr&gt;, scope &lt;chr&gt;, label &lt;chr&gt;</span></span></code></pre></div>
 </div>
+<div id="worksheet-intelligence" class="section level1">
+<h1>Worksheet intelligence</h1>
+<p>Each of the four functions below accepts an optional
+<code>sheet</code> argument to restrict output to a single
+worksheet.</p>
+<div id="shelves-what-fields-are-on-rows-cols-and-encodings" class="section level2">
+<h2>Shelves — what fields are on rows, cols, and encodings?</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>shelves <span class="ot">&lt;-</span> <span class="fu">twb_sheet_shelves</span>(parser)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">head</span>(shelves)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 7</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt;   sheet   shelf    field_ref   field_instance field_clean datasource aggregation</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;       &lt;chr&gt;          &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;      </span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; 1 Sheet 1 color    [federated… none:Calculat… Calculatio… federated… &lt;NA&gt;       </span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; 2 Sheet 1 cols     [federated… Longitude (ge… Longitude … federated… &lt;NA&gt;       </span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; 3 Sheet 1 geometry [federated… clct:Geometry… Geometry    federated… &lt;NA&gt;       </span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; 4 Sheet 1 lod      [federated… clct:Geometry… Geometry    federated… &lt;NA&gt;       </span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; 5 Sheet 1 lod      [federated… none:counts:qk counts      federated… &lt;NA&gt;       </span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt; 6 Sheet 1 rows     [federated… Latitude (gen… Latitude (… federated… &lt;NA&gt;</span></span></code></pre></div>
+<p>The <code>shelf</code> column distinguishes <code>&quot;rows&quot;</code>,
+<code>&quot;cols&quot;</code>, <code>&quot;color&quot;</code>, <code>&quot;size&quot;</code>,
+<code>&quot;label&quot;</code>, <code>&quot;detail&quot;</code>, and
+<code>&quot;tooltip&quot;</code>.</p>
+</div>
+<div id="filters" class="section level2">
+<h2>Filters</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>filters <span class="ot">&lt;-</span> <span class="fu">twb_sheet_filters</span>(parser)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">head</span>(filters)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 0 × 9</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; # ℹ 9 variables: sheet &lt;chr&gt;, field_ref &lt;chr&gt;, field_clean &lt;chr&gt;,</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; #   datasource &lt;chr&gt;, filter_class &lt;chr&gt;, include_mode &lt;chr&gt;, members &lt;chr&gt;,</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; #   range_min &lt;chr&gt;, range_max &lt;chr&gt;</span></span></code></pre></div>
+<p>Categorical filters include a comma-separated <code>members</code>
+column; range filters populate <code>range_min</code> /
+<code>range_max</code>.</p>
+</div>
+<div id="axis-configuration" class="section level2">
+<h2>Axis configuration</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>axes <span class="ot">&lt;-</span> <span class="fu">twb_sheet_axes</span>(parser)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">head</span>(axes)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 0 × 7</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; # ℹ 7 variables: sheet &lt;chr&gt;, axis &lt;chr&gt;, field_ref &lt;chr&gt;, field_clean &lt;chr&gt;,</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; #   scale_type &lt;chr&gt;, reversed &lt;lgl&gt;, include_zero &lt;lgl&gt;</span></span></code></pre></div>
+</div>
+<div id="sort-directives" class="section level2">
+<h2>Sort directives</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>sorts <span class="ot">&lt;-</span> <span class="fu">twb_sheet_sorts</span>(parser)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">head</span>(sorts)</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 0 × 6</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt; # ℹ 6 variables: sheet &lt;chr&gt;, field_ref &lt;chr&gt;, field_clean &lt;chr&gt;,</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt; #   datasource &lt;chr&gt;, sort_order &lt;chr&gt;, sort_by &lt;chr&gt;</span></span></code></pre></div>
+</div>
+</div>
+<div id="dashboard-intelligence" class="section level1">
+<h1>Dashboard intelligence</h1>
+<div id="sheet-positions" class="section level2">
+<h2>Sheet positions</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>db_sheets <span class="ot">&lt;-</span> <span class="fu">twb_dashboard_sheets</span>(parser)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">head</span>(db_sheets)</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 0 × 7</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; # ℹ 7 variables: dashboard &lt;chr&gt;, sheet &lt;chr&gt;, zone_id &lt;chr&gt;, x &lt;int&gt;, y &lt;int&gt;,</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; #   w &lt;int&gt;, h &lt;int&gt;</span></span></code></pre></div>
+<p><code>x</code>, <code>y</code>, <code>w</code>, <code>h</code> are
+pixel coordinates within the dashboard canvas.</p>
+</div>
+<div id="zone-layout-tree" class="section level2">
+<h2>Zone layout tree</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>layout <span class="ot">&lt;-</span> <span class="fu">twb_dashboard_layout</span>(parser)</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="fu">head</span>(layout)</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 0 × 10</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt; # ℹ 10 variables: dashboard &lt;chr&gt;, zone_id &lt;chr&gt;, parent_zone_id &lt;chr&gt;,</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co">#&gt; #   component_type &lt;chr&gt;, target &lt;chr&gt;, layout_type &lt;chr&gt;, x &lt;int&gt;, y &lt;int&gt;,</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co">#&gt; #   w &lt;int&gt;, h &lt;int&gt;</span></span></code></pre></div>
+<p><code>parent_zone_id</code> links child zones to their container;
+root zones have <code>NA</code>. <code>component_type</code> is one of
+<code>&quot;worksheet&quot;</code>, <code>&quot;filter&quot;</code>,
+<code>&quot;container&quot;</code>, <code>&quot;legend&quot;</code>,
+<code>&quot;parameter_control&quot;</code>, <code>&quot;text&quot;</code>,
+<code>&quot;image&quot;</code>, or <code>&quot;blank&quot;</code>.</p>
+</div>
+<div id="actions" class="section level2">
+<h2>Actions</h2>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>actions <span class="ot">&lt;-</span> <span class="fu">twb_dashboard_actions</span>(parser)</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="fu">head</span>(actions)</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 0 × 6</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="co">#&gt; # ℹ 6 variables: action_name &lt;chr&gt;, action_type &lt;chr&gt;, source_sheets &lt;chr&gt;,</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="co">#&gt; #   target_sheet &lt;chr&gt;, run_on &lt;chr&gt;, url &lt;chr&gt;</span></span></code></pre></div>
+<p><code>action_type</code> is <code>&quot;filter&quot;</code>,
+<code>&quot;url&quot;</code>, <code>&quot;highlight&quot;</code>, or
+<code>&quot;parameter&quot;</code>. <code>source_sheets</code> is a
+comma-separated list; <code>url</code> is populated for URL actions.</p>
+</div>
+</div>
 <div id="relationships-and-joins" class="section level1">
 <h1>Relationships and Joins</h1>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>relations <span class="ot">&lt;-</span> parser<span class="sc">$</span><span class="fu">get_relationships</span>()</span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">head</span>(relations)</span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 8</span></span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt;   relationship_type left_table right_table       left_field operator right_field</span></span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;             &lt;chr&gt;      &lt;chr&gt;             &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;      </span></span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; 1 Relationship      Sheet1     Municipal_Bounda… County     =        COUNTY     </span></span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; # ℹ 2 more variables: left_is_calc &lt;lgl&gt;, right_is_calc &lt;lgl&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>relations <span class="ot">&lt;-</span> parser<span class="sc">$</span><span class="fu">get_relationships</span>()</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="fu">head</span>(relations)</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 8</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt;   relationship_type left_table right_table       left_field operator right_field</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;             &lt;chr&gt;      &lt;chr&gt;             &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;      </span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co">#&gt; 1 Relationship      Sheet1     Municipal_Bounda… County     =        COUNTY     </span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="co">#&gt; # ℹ 2 more variables: left_is_calc &lt;lgl&gt;, right_is_calc &lt;lgl&gt;</span></span></code></pre></div>
 </div>
 <div id="working-with-twbx-files-if-applicable" class="section level1">
 <h1>Working with TWBX Files (if applicable)</h1>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>parser<span class="sc">$</span><span class="fu">get_twbx_manifest</span>()</span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>parser<span class="sc">$</span><span class="fu">get_twbx_extracts</span>()</span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>parser<span class="sc">$</span><span class="fu">get_twbx_images</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>parser<span class="sc">$</span><span class="fu">get_twbx_manifest</span>()</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>parser<span class="sc">$</span><span class="fu">get_twbx_extracts</span>()</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>parser<span class="sc">$</span><span class="fu">get_twbx_images</span>()</span></code></pre></div>
 </div>
 <div id="validation-of-relationships" class="section level1">
 <h1>Validation of Relationships</h1>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>v <span class="ot">&lt;-</span> parser<span class="sc">$</span><span class="fu">validate</span>()</span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">isTRUE</span>(v<span class="sc">$</span>ok)) {</span>
-<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Relationships validated successfully.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="fu">print</span>(v<span class="sc">$</span>issues)</span>
-<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>}</span>
-<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt; Relationships validated successfully.</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>v <span class="ot">&lt;-</span> parser<span class="sc">$</span><span class="fu">validate</span>()</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">isTRUE</span>(v<span class="sc">$</span>ok)) {</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Relationships validated successfully.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="fu">print</span>(v<span class="sc">$</span>issues)</span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>}</span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="co">#&gt; Relationships validated successfully.</span></span></code></pre></div>
 </div>
 <div id="summary" class="section level1">
 <h1>Summary</h1>

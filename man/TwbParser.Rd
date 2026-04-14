@@ -18,6 +18,25 @@ An R6 class generator.
 
 \item{exdir}{Output directory (defaults to parser's twbx dir or tempdir()).}
 
+\item{sheet}{Optional worksheet name.}
+
+\item{include_parameters}{Logical; include parameter fields. Default \code{FALSE}.}
+
+\item{include_filters}{Include filter appearances. Default \code{TRUE}.}
+
+\item{include_shelves}{Include shelf appearances. Default \code{TRUE}.}
+
+\item{wide}{Return wide format (one col per sheet). Default \code{FALSE}.}
+
+\item{dashboard}{Optional dashboard name to scope the brief.}
+
+\item{include_sql}{Include custom SQL blocks. Default \code{TRUE}.}
+
+\item{include_formulas}{Add \code{formula_pretty} to calculated fields.
+Default \code{TRUE}.}
+
+\item{format}{\code{"list"} (default) or \code{"text"}.}
+
 \item{error}{If \code{TRUE}, \code{stop()} when validation fails.}
 }
 \description{
@@ -30,6 +49,26 @@ Return TWBX extract entries.
 Return TWBX image entries.
 
 Extract files from the TWBX to disk.
+
+Fields placed on visual shelves for one or all worksheets.
+
+Detailed filter configuration for one or all worksheets.
+
+Axis configuration for one or all worksheets.
+
+Sort directives for one or all worksheets.
+
+Worksheets embedded in one or all dashboards.
+
+Full zone layout with container hierarchy.
+
+Dashboard and workbook actions.
+
+Calculated field complexity classifications.
+
+Field usage matrix across worksheets.
+
+Full replication brief for the workbook or a single dashboard.
 
 Validate relationships; optionally stop on failure.
 

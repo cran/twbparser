@@ -59,6 +59,34 @@ twb_charts(parser)
 twb_colors(parser)
 
 
+## ----sheet-shelves, eval=ok---------------------------------------------------
+shelves <- twb_sheet_shelves(parser)
+head(shelves)
+
+## ----sheet-filters, eval=ok---------------------------------------------------
+filters <- twb_sheet_filters(parser)
+head(filters)
+
+## ----sheet-axes, eval=ok------------------------------------------------------
+axes <- twb_sheet_axes(parser)
+head(axes)
+
+## ----sheet-sorts, eval=ok-----------------------------------------------------
+sorts <- twb_sheet_sorts(parser)
+head(sorts)
+
+## ----dashboard-sheets, eval=ok------------------------------------------------
+db_sheets <- twb_dashboard_sheets(parser)
+head(db_sheets)
+
+## ----dashboard-layout, eval=ok------------------------------------------------
+layout <- twb_dashboard_layout(parser)
+head(layout)
+
+## ----dashboard-actions, eval=ok-----------------------------------------------
+actions <- twb_dashboard_actions(parser)
+head(actions)
+
 ## ----relationships-joins, eval=exists("parser")-------------------------------
 relations <- parser$get_relationships()
 
