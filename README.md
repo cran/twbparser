@@ -18,9 +18,11 @@ Parse Tableau **TWB/TWBX** files in R: extract **datasources, joins, relationshi
 -   **Datasources**: connection classes/targets, inferred locations, field counts
 -   **Worksheet intelligence**: shelves (rows/cols/encodings), filters, axes, and sorts per worksheet
 -   **Dashboard intelligence**: sheet positions, full zone layout tree, and filter/URL actions
+-   **Replication fidelity**: dashboard sizing, style formatting, palette mappings, and worksheet tooltips
 -   **Dependency graph**: build/plot field dependency DAGs
 -   **TWBX assets**: list/extract images, extracts, text files, etc.
--   **Ergonomics**: `parser$summary` (no parens), `parser$overview`, `parser$pages`, `parser$pages_summary`
+-   **Workbook report**: `parser$summary` / `parser$report` provide a structured inspection summary for console use or UI rendering
+-   **Interactive app**: launch the bundled Shiny workbook inspector locally or deploy it as a Docker Space
 
 
 ## Installation
@@ -56,10 +58,29 @@ parser$summary
 parser$overview
 ```
 
-With a ".twbx" file
+## Interactive Shiny App
+
+Launch the bundled workbook inspector from R:
 
 ``` r
-parser <- TWBParser$new("path/to/workbook.twbx")
+library(twbparser)
+
+run_twbparser_app()
+```
+
+The app lets users upload `.twb` / `.twbx` files, shows a clean loading overlay
+while parsing, and organizes the workbook report into tabs for overview, pages,
+filters, shelves, fields, datasources, calculations, SQL, TWBX assets, and
+validation, with dedicated views for dashboard layout, chart hints, formatting,
+and tooltips.
+
+Access here:
+[`twbparser-inspector`](https://huggingface.co/spaces/Prigas89/twbparser-inspector):
+
+
+
+``` r
+parser <- TwbParser$new("path/to/workbook.twbx")
 
 # Inspect manifest
 parser$twbx_manifest
@@ -135,6 +156,21 @@ parser$get_dashboard_layout()
 parser$get_dashboard_actions()
 ```
 
+Replication fidelity (new in 0.5.0)
+
+```r
+# Declared dashboard page size and sizing mode
+parser$get_dashboard_size()
+# or: twb_dashboard_size(parser, dashboard = "Overview")
+
+# Style-rule formats: fonts, number/date formats, shading, and palette maps
+parser$get_formatting()
+# or: twb_formatting(parser, scope = "worksheet")
+
+# Plain-text worksheet tooltip content
+parser$get_tooltips()
+```
+
 Relationships/Joins 
 
 ```r
@@ -183,10 +219,19 @@ Rscript -e "twbparser::parse_twb('my_dashboard.twb', output_dir = 'results/')"
 -   Power BI: Export calculated field logic to replicate measures in DAX.
 -   Data lineage: Combine with DiagrammeR or visNetwork for workflow diagrams.
 
-## What’s new (0.4.0)
+## What's new (0.5.0)
+
+- **Fidelity extractors**: `twb_dashboard_size()`, `twb_formatting()`, and `twb_tooltips()` expose dashboard sizing, fonts, number/date formats, palette mappings, and worksheet tooltip text.
+- **App fidelity tabs**: the bundled Shiny inspector now includes formatting and tooltip tables alongside the dashboard wireframe and chart hints.
+- **Parameter fix**: datasource details now return actual parameter fields via `extract_parameters()`.
+
+## What's new (0.4.0)
 
 - **Worksheet intelligence**: `twb_sheet_shelves()`, `twb_sheet_filters()`, `twb_sheet_axes()`, `twb_sheet_sorts()` — extract the full shelf configuration, filter predicates, axis settings, and sort rules for every worksheet
 - **Dashboard intelligence**: `twb_dashboard_sheets()`, `twb_dashboard_layout()`, `twb_dashboard_actions()` — inspect which sheets appear where, the full zone hierarchy, and all filter/URL actions
+- **Interactive Shiny app**: `run_twbparser_app()` launches a bundled workbook inspector with upload support, loading overlays, report tabs, and CSV/brief export in the deployed app.
+- **Docker Space deployment**: `deploy/huggingface/` contains the Dockerfile, Space card, and deployment notes for hosting the Shiny app.
+- **Workbook report**: `parser$summary` and `parser$report` expose a structured workbook report that powers both console output and the app.
 - **Bug fixes**: corrected edge direction in `plot_relationship_graph()`, fixed column references in `plot_source_join_graph()`, eliminated Cartesian-product explosion in `infer_implicit_relationships()`
 
 ## Contributing

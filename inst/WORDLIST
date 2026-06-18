@@ -4,7 +4,9 @@ behaviour
 calc
 calcs
 centric
+colours
 CRAN's
+customised
 Encodings
 encodings
 param
@@ -30,8 +32,10 @@ datatypes
 DAX
 DiagrammeR
 dir
+Dockerfile
 ELSEIF
 ggraph
+getter
 graphql
 GraphQL
 GUID
@@ -53,6 +57,7 @@ tempdir
 tibble
 Tibble
 tibbles
+UI
 twb
 TWB
 twbx

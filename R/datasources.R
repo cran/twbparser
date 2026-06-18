@@ -2,15 +2,15 @@
 #'
 #' Gathers runtime tables (from the object graph), merges in named-connection
 #' metadata (class, caption, targets), and augments with top-level datasource
-#' definitions (field counts, connection type, location). Also returns a
-#' filtered table of parameter datasources.
+#' definitions (field counts, connection type, location). Also returns the
+#' workbook's parameter fields via [extract_parameters()].
 #'
 #' @param xml_doc An `xml2` document for a Tableau `.twb`.
 #'
 #' @return A named list with:
 #' \describe{
 #'   \item{data_sources}{Tibble of datasources joined with connection metadata.}
-#'   \item{parameters}{Tibble of parameter datasources (if present).}
+#'   \item{parameters}{Tibble of parameter fields from [extract_parameters()].}
 #'   \item{all_sources}{Same as `data_sources` (placeholder for future variants).}
 #' }
 #'
@@ -96,10 +96,15 @@ extract_datasource_details <- function(xml_doc) {
       server <- attr_safe_get(a, "server", NA_character_)
       filename <- attr_safe_get(a, "filename", NA_character_)
 
+      server_label <- if (!is.na(server) && nzchar(server)) server else "<unknown>"
+      file_label <- function(x) {
+        if (!is.na(x) && nzchar(x)) base::basename(x) else "<unknown>"
+      }
+
       location <- dplyr::case_when(
-        cls == "excel"     ~ paste0("Excel: ",  base::basename(filename %||% "")),
-        cls == "textscan"  ~ paste0("CSV: ",    base::basename(filename %||% "")),
-        cls == "federated" ~ paste0("Federated: ", server %||% "<unknown>"),
+        cls == "excel"     ~ paste0("Excel: ", file_label(filename)),
+        cls == "textscan"  ~ paste0("CSV: ", file_label(filename)),
+        cls == "federated" ~ paste0("Federated: ", server_label),
         TRUE               ~ "Unknown"
       )
 
@@ -146,10 +151,13 @@ extract_datasource_details <- function(xml_doc) {
       field_count, connection_type, location
     )
 
-  # Parameters table (from meta), NA-safe
-  params <- meta |>
-    dplyr::filter(!is.na(datasource_name) &
-                    stringr::str_detect(datasource_name, "^Parameters?$"))
+  # Parameters: the actual parameter columns (those with @param-domain-type),
+  # not datasource-level metadata. Sourcing from meta mislabelled the Parameters
+  # *datasource* as a single "parameter" and dropped the real ones.
+  params <- tryCatch(
+    extract_parameters(xml_doc),
+    error = function(e) tibble::tibble()
+  )
 
   # Return structure expected by TwbParser getters
   list(
