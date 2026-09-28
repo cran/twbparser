@@ -1,6 +1,6 @@
 Package: twbparser
-Title: Parse 'Tableau' Workbooks into Tidy Data and Dependency Graphs
-Version: 0.5.0
+Title: Parse 'Tableau' Workbooks into Functional Data
+Version: 0.5.1
 Authors@R: 
     person("George", "Arthur", , "prigasgenthian48@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1975-1459"))
@@ -24,9 +24,9 @@ Encoding: UTF-8
 Language: en-US
 RoxygenNote: 7.3.3
 NeedsCompilation: no
-Packaged: 2026-06-18 05:58:36 UTC; priga
+Packaged: 2026-09-28 17:22:06 UTC; priga
 Author: George Arthur [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-1975-1459>)
 Maintainer: George Arthur <prigasgenthian48@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-06-18 11:30:02 UTC
+Date/Publication: 2026-09-28 17:50:02 UTC

@@ -75,6 +75,35 @@ head(axes)
 sorts <- twb_sheet_sorts(parser)
 head(sorts)
 
+## ----sheet-spec, eval=ok------------------------------------------------------
+spec <- twb_sheet_spec(parser, sheet = "Sheet 1")
+spec
+
+## ----rebuild-kit-setup--------------------------------------------------------
+kit_ok <- FALSE
+kit_path <- system.file("extdata", "rebuild_kit.twb", package = "twbparser")
+if (nzchar(kit_path) && file.exists(kit_path)) {
+  kit <- TwbParser$new(kit_path)
+  kit_ok <- TRUE
+}
+
+## ----unused-fields, eval=kit_ok-----------------------------------------------
+# Fields defined but never used anywhere: the safe-to-drop list
+twb_unused_fields(kit)
+
+## ----calc-build-order, eval=kit_ok--------------------------------------------
+# Calculations in creation order — "Adjusted Ratio" comes after "Profit Ratio";
+# the Cycle A/B pair is flagged instead of silently misordered
+twb_calc_build_order(kit)
+
+## ----parameter-usage, eval=kit_ok---------------------------------------------
+# Where each parameter value flows: formulas, shelves, filters, dashboards
+twb_parameter_usage(kit)
+
+## ----dashboard-charts, eval=ok------------------------------------------------
+charts <- twb_dashboard_charts(parser)
+head(charts)
+
 ## ----dashboard-sheets, eval=ok------------------------------------------------
 db_sheets <- twb_dashboard_sheets(parser)
 head(db_sheets)
@@ -106,4 +135,10 @@ cat("Relationships validated successfully.\n")
 print(v$issues)
 }
 
+
+## ----batch-export, eval=exists("parser")--------------------------------------
+out <- parse_twb(parser$path,
+                 output_dir = file.path(tempdir(), "twbparser-vignette"),
+                 overwrite = TRUE, quiet = TRUE)
+list.files(out)
 
